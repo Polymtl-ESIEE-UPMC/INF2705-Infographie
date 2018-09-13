@@ -57,17 +57,23 @@ public:
       }
       else
       {
-         // Indice : l'appel ci-dessus est équivalent à
-         // matrVisu.LookAt( dist*cos(glm::radians(theta))*sin(glm::radians(phi)),
-         //                  dist*sin(glm::radians(theta))*sin(glm::radians(phi)),
-         //                  dist*cos(glm::radians(phi)),
-         //                  0., 0., 0.,
-         //                  0., 0., 1. );
+
+         
          // matrVisu.Translate( 0., 0., -5. );
 
          matrVisu.LoadIdentity( );
-         matrVisu.Translate( 0., 0., -dist );
-         // utilisez matrVisu.Translate(), matrVisu.Rotate(), ...
+
+
+         matrVisu.Translate( 0., 0, -dist);
+
+         matrVisu.Rotate(-theta, 0, 1, 0);
+         matrVisu.Rotate(-phi, 1, 0, 0);
+         //matrVisu.Rotate(-phi, 0, 0, 1);
+
+
+         matrVisu.Translate( 0., 0, -5);
+
+         matrVisu.Rotate(-90, 0, 0, 1);
       }
    }
    void verifierAngles() // vérifier que les angles ne débordent pas les valeurs permises
@@ -343,7 +349,6 @@ void afficherCorps()
 			matrModel.Translate(0,0,-bestiole.taille);
 			matrModel.Rotate(90, 1, 0, 0);
             matrModel.Scale(bestiole.taille / 2, bestiole.taille / 2, bestiole.taille / 2);
-            //matrModel.Translate( 0.0, -2.0, 0.0 );
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
             afficherTheiere();
          }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
