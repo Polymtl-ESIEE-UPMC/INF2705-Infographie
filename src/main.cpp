@@ -300,8 +300,8 @@ void afficherCorps()
 
    // amener le repère à la position courante
    // ...
-   //matrModel.Translate(bestiole.position.x, bestiole.position.y, bestiole.position.z);
-   //matrModel.Rotate(bestiole.angleCorps, 0, 0, 1);
+   matrModel.Translate(bestiole.position.x, bestiole.position.y, bestiole.position.z);
+   matrModel.Rotate(bestiole.angleCorps, 0, 0, 1);
 
 
    // montrer le repère à la position courante
@@ -331,7 +331,7 @@ void afficherCorps()
          // afficher la tête
          glVertexAttrib3f( locColor, 1.0, 0.0, 1.0 ); // magenta; équivalent au glColor() de OpenGL 2.x
          matrModel.PushMatrix();{
-            matrModel.Translate( 0.0, 2.0, 0.0 ); // (bidon) À MODIFIER
+            matrModel.Translate( bestiole.taille / 2 ,0, bestiole.taille); // (bidon) À MODIFIER
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
             afficherSphere();
          }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
@@ -340,7 +340,8 @@ void afficherCorps()
       case 2: // une théière
          glVertexAttrib3f( locColor, 0.0, 1.0, 0.0 ); // vert; équivalent au glColor() de OpenGL 2.x
          matrModel.PushMatrix();{
-            matrModel.Scale( 0.45, 0.45, 0.45 );
+			matrModel.Rotate(90, 1, 0, 0);
+            matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
             matrModel.Translate( 0.0, -2.0, 0.0 );
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
             afficherTheiere();
