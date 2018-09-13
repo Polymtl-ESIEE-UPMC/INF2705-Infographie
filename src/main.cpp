@@ -319,9 +319,9 @@ void afficherCorps()
          glVertexAttrib3f( locColor, 0.0, 1.0, 0.0 ); // vert; équivalent au glColor() de OpenGL 2.x
          matrModel.PushMatrix();{
             // ==> Avant de tracer, on doit informer la carte graphique des changements faits à la matrice de modélisation
-            matrModel.Translate(-bestiole.taille / 2, 0, 0);
+            matrModel.Translate(-bestiole.taille, 0, 0);
             matrModel.Rotate(90, 0, 1, 0);
-            matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
+            matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille*2);
             
             //matrModel.Translate(0, 0, 1);
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
@@ -331,7 +331,7 @@ void afficherCorps()
          // afficher la tête
          glVertexAttrib3f( locColor, 1.0, 0.0, 1.0 ); // magenta; équivalent au glColor() de OpenGL 2.x
          matrModel.PushMatrix();{
-            matrModel.Translate( bestiole.taille / 2 ,0, bestiole.taille); // (bidon) À MODIFIER
+            matrModel.Translate( bestiole.taille, 0, bestiole.taille); // (bidon) À MODIFIER
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
             afficherSphere();
          }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
@@ -368,8 +368,8 @@ void afficherAiles()
 								(M_SQRT2 / 2) * bestiole.taille );
 		
       		matrModel.Rotate(bestiole.angleAile, pow(-1, i), 0, 0);
-      		matrModel.Translate(0, bestiole.taille/2* pow(-1, i), 0);
-			matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
+      		matrModel.Translate(0, bestiole.taille * pow(-1, i), 0);
+			matrModel.Scale(bestiole.taille*2, bestiole.taille*2, bestiole.taille*2);
       
 			// afficherRepereCourant( ); // débogage
 			glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
@@ -388,12 +388,12 @@ void afficherPattes()
     for (int i = 0; i < 2; ++i) {
 		for (int j = 0; j < 2; ++j) {
 			matrModel.PushMatrix();{
-				matrModel.Translate(bestiole.taille / 2 * pow(-1, i),
+				matrModel.Translate(bestiole.taille * pow(-1, i),
 									(M_SQRT2 + bestiole.largPatte) * bestiole.taille / 2 * pow(-1, j),
 									(-M_SQRT2) * bestiole.taille / 2 );
 				matrModel.Rotate(bestiole.anglePatte, pow(-1, j), -pow(-1, i), 0);
-				matrModel.Translate(0, 0, -bestiole.longPatte / 2 * bestiole.taille);
-        		matrModel.Scale(bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.longPatte);
+				matrModel.Translate(0, 0, -bestiole.longPatte / 2);
+        		matrModel.Scale(bestiole.largPatte, bestiole.largPatte, bestiole.longPatte);
 				// afficherRepereCourant( ); // débogage
 				glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
 				afficherCube();
