@@ -361,12 +361,12 @@ void afficherAiles()
    for (int i = 0; i < 2; ++i)
    {
 		matrModel.PushMatrix();{
-		matrModel.Translate(0,
+			matrModel.Translate(0,
 								(M_SQRT2 / 2 * bestiole.taille) * pow(-1, i),
 								(M_SQRT2 / 2) * bestiole.taille );
 		
-      matrModel.Rotate(bestiole.angleAile, pow(-1, i), 0, 0);
-      matrModel.Translate(0, bestiole.taille/2* pow(-1, i), 0);
+      		matrModel.Rotate(bestiole.angleAile, pow(-1, i), 0, 0);
+      		matrModel.Translate(0, bestiole.taille/2* pow(-1, i), 0);
 			matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
       
 			// afficherRepereCourant( ); // débogage
@@ -388,9 +388,10 @@ void afficherPattes()
 			matrModel.PushMatrix();{
 				matrModel.Translate(bestiole.taille / 2 * pow(-1, i),
 									(M_SQRT2 + bestiole.largPatte) * bestiole.taille / 2 * pow(-1, j),
-									(-M_SQRT2 - bestiole.longPatte) * bestiole.taille / 2 );
-				//matrModel.Rotate(bestiole.anglePatte, pow(-1, j), -pow(-1, i), 0);
-				matrModel.Scale(bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.longPatte);
+									(-M_SQRT2) * bestiole.taille / 2 );
+				matrModel.Rotate(bestiole.anglePatte, pow(-1, j), -pow(-1, i), 0);
+				matrModel.Translate(0, 0, -bestiole.longPatte / 2 * bestiole.taille);
+        		matrModel.Scale(bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.largPatte, bestiole.taille * bestiole.longPatte);
 				// afficherRepereCourant( ); // débogage
 				glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
 				afficherCube();
