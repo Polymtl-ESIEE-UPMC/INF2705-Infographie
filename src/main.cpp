@@ -57,23 +57,12 @@ public:
       }
       else
       {
-
-         
-         // matrVisu.Translate( 0., 0., -5. );
-
          matrVisu.LoadIdentity( );
-
-
          matrVisu.Translate( 0., 0, -dist);
-
-         matrVisu.Rotate(-theta, 0, 1, 0);
          matrVisu.Rotate(-phi, 1, 0, 0);
-         //matrVisu.Rotate(-phi, 0, 0, 1);
-
-
+		 matrVisu.Rotate(-theta, 0, 0, 1);
          matrVisu.Translate( 0., 0, -5);
-
-         matrVisu.Rotate(-90, 0, 0, 1);
+		 matrVisu.Rotate(-90, 0, 0, 1);
       }
    }
    void verifierAngles() // vérifier que les angles ne débordent pas les valeurs permises
