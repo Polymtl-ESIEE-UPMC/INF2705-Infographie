@@ -340,9 +340,10 @@ void afficherCorps()
       case 2: // une théière
          glVertexAttrib3f( locColor, 0.0, 1.0, 0.0 ); // vert; équivalent au glColor() de OpenGL 2.x
          matrModel.PushMatrix();{
+			matrModel.Translate(0,0,-bestiole.taille);
 			matrModel.Rotate(90, 1, 0, 0);
-            matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
-            matrModel.Translate( 0.0, -2.0, 0.0 );
+            matrModel.Scale(bestiole.taille / 2, bestiole.taille / 2, bestiole.taille / 2);
+            //matrModel.Translate( 0.0, -2.0, 0.0 );
             glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
             afficherTheiere();
          }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
