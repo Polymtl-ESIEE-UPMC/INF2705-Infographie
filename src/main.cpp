@@ -361,15 +361,14 @@ void afficherAiles()
    for (int i = 0; i < 2; ++i)
    {
 		matrModel.PushMatrix();{
-			/*matrModel.Translate(0,
-								(M_SQRT2 + bestiole.taille) * bestiole.taille / 2 * pow(-1, i),
-								(M_SQRT2 + bestiole.taille) * bestiole.taille / 2 );
-			*/matrModel.Translate(0,
-								0,//(M_SQRT2 / 2) * (bestiole.taille * 3 / 2) * pow(-1, i),
-								(M_SQRT2 / 2) * bestiole.taille );//M_SQRT2 * bestiole.taille / 2 - bestiole.taille );
-			//matrModel.Rotate(bestiole.angleAile, pow(-1, i), 0, 0);
-      matrModel.Rotate(0, pow(-1, i), 0, 0);
+		matrModel.Translate(0,
+								(M_SQRT2 / 2 * bestiole.taille) * pow(-1, i),
+								(M_SQRT2 / 2) * bestiole.taille );
+		
+      matrModel.Rotate(bestiole.angleAile, pow(-1, i), 0, 0);
+      matrModel.Translate(0, bestiole.taille/2* pow(-1, i), 0);
 			matrModel.Scale(bestiole.taille, bestiole.taille, bestiole.taille);
+      
 			// afficherRepereCourant( ); // débogage
 			glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
 			afficherQuad();
@@ -400,7 +399,6 @@ void afficherPattes()
 		}
 	}
 }
-
 void afficherBestiole()
 {
    // afficherRepereCourant( ); // débogage
