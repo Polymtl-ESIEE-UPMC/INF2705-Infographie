@@ -210,9 +210,19 @@ void FenetreTP::initialiser()
    // (partie 2) MODIFICATIONS ICI ...
    // créer le VBO pour les sommets
    // ...
+   glGenBuffers( 1, &vboTheiereSommets );
+   glBindBuffer( GL_ARRAY_BUFFER, vboTheiereSommets );
+   glBufferData( GL_ARRAY_BUFFER, sizeof(gTheiereSommets), gTheiereSommets, GL_STATIC_DRAW );
+     
 
    // créer le VBO la connectivité
    // ...
+   glGenBuffers( 1, &vboTheiereConnec );
+   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vboTheiereConnec );
+   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(gTheiereConnec), gTheiereConnec, GL_STATIC_DRAW );
+   
+   glVertexAttribPointer(locVertex, 3, GL_FLOAT, GL_FALSE, 0, 0);  
+   glEnableVertexAttribArray(locVertex);
 
    glBindVertexArray(0);
 
@@ -274,11 +284,16 @@ void afficherTheiere()
    glBindVertexArray( vao[1] );
    // (partie 2) MODIFICATIONS ICI ...
    // vous pouvez utiliser temporairement cette fonction pour la première partie du TP, mais vous ferez mieux dans la seconde partie du TP
-   glBegin( GL_TRIANGLES );
-   for ( unsigned int i = 0 ; i < sizeof(gTheiereConnec)/sizeof(GLuint) ; i++ )
-      glVertex3fv( &(gTheiereSommets[3*gTheiereConnec[i]] ) );
-   glEnd( );
+  //  glBegin( GL_TRIANGLES );
+  //  for ( unsigned int i = 0 ; i < sizeof(gTheiereConnec)/sizeof(GLuint) ; i++ )
+  //     glVertex3fv( &(gTheiereSommets[3*gTheiereConnec[i]] ) );
+  //  glEnd( );
+   glDrawElements(GL_TRIANGLE_STRIP, sizeof(gTheiereConnec)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
    glBindVertexArray(0);
+  
+  //  glDisableVertexAttribArray(locVertex);
+  //  glBindBuffer( GL_ARRAY_BUFFER, 0 );
+  //  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
 // afficher le corps de la bestiole
