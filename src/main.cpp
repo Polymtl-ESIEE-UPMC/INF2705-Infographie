@@ -288,12 +288,14 @@ void afficherTheiere()
   //  for ( unsigned int i = 0 ; i < sizeof(gTheiereConnec)/sizeof(GLuint) ; i++ )
   //     glVertex3fv( &(gTheiereSommets[3*gTheiereConnec[i]] ) );
   //  glEnd( );
+   glBindBuffer( GL_ARRAY_BUFFER, vboTheiereSommets );
+   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vboTheiereConnec );
    glDrawElements(GL_TRIANGLE_STRIP, sizeof(gTheiereConnec)/sizeof(GLuint), GL_UNSIGNED_INT, 0);
    glBindVertexArray(0);
   
-  //  glDisableVertexAttribArray(locVertex);
-  //  glBindBuffer( GL_ARRAY_BUFFER, 0 );
-  //  glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+   glDisableVertexAttribArray(locVertex);
+   glBindBuffer( GL_ARRAY_BUFFER, 0 );
+   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 }
 
 // afficher le corps de la bestiole
