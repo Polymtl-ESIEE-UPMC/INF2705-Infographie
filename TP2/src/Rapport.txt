@@ -1,0 +1,16 @@
+Q1: Dans le nuanceur de sommets, si on souhaite calculer la profondeur du
+    sommet dans le repère de la caméra, on peut utiliser cette formule :
+
+    « out float profondeur = -( matrVisu * matrModel * Vertex ).z; »
+
+    Pourquoi doit-on inverser le signe du résultat calculé ?
+
+
+Q2: Pourquoi ne peut-on pas utiliser le même programme de nuanceurs que pour
+    les poissons pour voir l'aquarium (et surtout ses côtés!) dans les deux
+    vues? On peut bien sûr ajouter diverses variables de contrôle pour dire
+    de ne pas faire de découpage avec les plans glClipPlane ou pour indiquer
+    de ne pas modifier les couleurs, mais le programme de nuanceurs des
+    poissons ne fonctionnera pas correctement pour afficher l'aquarium et
+    ses côtés. Pourquoi?
+
