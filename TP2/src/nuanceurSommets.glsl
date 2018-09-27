@@ -30,5 +30,11 @@ void main( void )
    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine l'attribut "planDragage".
    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine l'attribut "planRayonsX".
    // Vous ENLEVEREZ ce test inutile!
-   if ( planDragage.x + planRayonsX.x < -10000.0 ) AttribsOut.couleur.r += 0.001;
+   // if ( planDragage.x + planRayonsX.x < -10000.0 ) AttribsOut.couleur.r += 0.001;
+
+   // position dans le monde
+   vec4 pos = matrModel * Vertex;
+
+   gl_ClipDistance[0] = dot(planDragage, pos);
+   gl_ClipDistance[1] = dot(planRayonsX, pos);
 }

@@ -1,7 +1,7 @@
 // Prénoms, noms et matricule des membres de l'équipe:
-// - Prénom1 NOM1 (matricule1)
-// - Prénom2 NOM2 (matricule2)
-#warning "Écrire les prénoms, noms et matricule des membres de l'équipe dans le fichier et commenter cette ligne"
+// Mikael MARSOLAIS (1844166)
+// Quoc-Hao TRAN (1972967)
+//#warning "Écrire les prénoms, noms et matricule des membres de l'équipe dans le fichier et commenter cette ligne"
 
 #include <stdlib.h>
 #include <iostream>
@@ -258,12 +258,19 @@ public:
 
       // activer les plans de coupe et afficher la scène normalement
       // partie 1: modifs ici ...
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      afficherTousLesPoissons();
 
+      glEnable(GL_CLIP_PLANE0);
+      glEnable(GL_CLIP_PLANE1);
+      
       // afficher les poissons en plein
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       afficherTousLesPoissons();
       // afficher les poissons en fil de fer (squelette)
       // ...
-
+      glDisable(GL_CLIP_PLANE1);
+      glDisable(GL_CLIP_PLANE0);
       // « fermer » les poissons
       // partie 1: modifs ici ...
       // ...
