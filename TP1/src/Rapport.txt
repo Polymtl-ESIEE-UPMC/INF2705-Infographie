@@ -4,6 +4,22 @@ Q1: Supposons que les coordonnées du modèle soient exprimées dans un système
     afin de préserver le même effet visuel d'une rotation positive ?  Quelle
     serait la nouvelle matrice pour une rotation autour de l'axe des Z ?
 
+    Il faudrait ajouter un signe négatif devant la valeur de l'angle.
+    Donc la matrice passe de
+    
+    [cos(theta) -sin(theta) 0   0
+     sin(theta)  cos(theta) 0   0
+     0              0       1   0
+     0              0       0   1]
+    
+    à
+
+    [cos(theta)  sin(theta) 0   0
+    -sin(theta)  cos(theta) 0   0
+     0              0       1   0
+     0              0       0   1]
+
+    car sin(-theta) = -sin(theta)
 
 
 Q2: Dans ce TP, on peut déplacer la bestiole avec les flèches du clavier ou
@@ -18,3 +34,28 @@ Q2: Dans ce TP, on peut déplacer la bestiole avec les flèches du clavier ou
     soit toujours dirigée dans le sens de son mouvement ?
     Décrivez (avec assez de détails) comment vous implanteriez ceci dans ce TP.
 
+    On doit déterminer la direction de mouvement. 
+    Si c'est un déplacement automatique, on la calcule à partir de la fonction 
+calculerPhysique. On peut rajouter à la fin, en posant direction le vecteur 
+direction de la bestiole
+    
+    direction.x = sens[0] * vitesse.x;
+    direction.y = sens[1] * vitesse.y;
+    direction.z = sens[2] * vitesse.x;
+   
+    On multiplie par la vitesse car la vitesse décomposée est différentes pour chaque axe
+
+    Puis, il faut faire varier la rotation de la bestiole selon deux angles qui suivent la
+    direction calculée.
+
+    unTheta = direction.x == 0 ? signe(direction.y) * PI / 2 : 
+                                 direction.x > 0 ? arctan(direction.y / direction.x) :
+                                                   arctan(direction.y / direction.x) + PI;
+
+    unPhi = (direction.x != - && direction.y != 0) ? arctan(direction.z / hypot(direction.x, direction.z)) :
+                                                     signe(direction.z) * PI / 2;
+
+    Ensuite on effectue les transformation nécessaire dans la fonction afficherCorps après la translation.
+
+    matrModel.Rotate(glm::degrees(unTheta), 0, 0, 1);
+    matrModel.Rotate(-glm::degrees(unPhi), 0, 1, 0);
