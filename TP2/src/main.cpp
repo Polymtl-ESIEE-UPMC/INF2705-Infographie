@@ -215,6 +215,18 @@ public:
       glVertexAttrib4f( locColor, 1.0, 1.0, 1.0, alpha );
       // afficher le plan mis à l'échelle, tourné selon l'angle courant et à la position courante
       // partie 1: modifs ici ...
+      matrModel.PushMatrix();{
+         matrModel.Translate(0, 0, -etat.planDragage.w);
+         matrModel.Rotate(etat.angleDragage , 0, 1, 0);
+         matrModel.Scale( etat.bDim.x, etat.bDim.y, etat.bDim.z );
+         glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
+
+         glBindVertexArray( vao );
+         glEnable(GL_BLEND);
+         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+         glDisable(GL_BLEND);
+         glBindVertexArray( 0 );
+      }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
 
    }
 
@@ -258,22 +270,68 @@ public:
 
       // activer les plans de coupe et afficher la scène normalement
       // partie 1: modifs ici ...
-      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-      afficherTousLesPoissons();
 
       glEnable(GL_CLIP_PLANE0);
       glEnable(GL_CLIP_PLANE1);
-      
+            
       // afficher les poissons en plein
-      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
       afficherTousLesPoissons();
       // afficher les poissons en fil de fer (squelette)
       // ...
+      
+      glUniform4fv( locplanRayonsX, 1, glm::value_ptr(-etat.planRayonsX) );
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+      afficherTousLesPoissons();
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+      
       glDisable(GL_CLIP_PLANE1);
-      glDisable(GL_CLIP_PLANE0);
       // « fermer » les poissons
       // partie 1: modifs ici ...
       // ...
+
+      // activer le stencil
+      glEnable(GL_STENCIL_TEST);
+      
+      // désactiver l’écriture dans le tampon de couleur (modifier le masque d’écriture)
+      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+      // désactiver le test de profondeur ;
+      glDisable(GL_DEPTH_TEST);
+
+      // activer le culling
+      glEnable(GL_CULL_FACE);
+
+      // indiquer que le test de stencil passe toujours
+      glStencilFunc(GL_ALWAYS, 0, 1);
+
+      // afficher seulement les faces arrière de la scène en incrémentant les valeurs dans le stencil
+      glCullFace(GL_FRONT);
+      glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+      afficherTousLesPoissons();
+
+      // afficher seulement les faces avant de la scène en décrémentant les valeurs dans le stencil
+      glCullFace(GL_BACK);
+      glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+      afficherTousLesPoissons();
+
+      // réactiver l’écriture dans le tampon de couleur (modifier le masque d’écriture)
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+      // réactiver le test de profondeur
+      glEnable(GL_DEPTH_TEST);
+
+      // désactiver le culling
+      glDisable(GL_CULL_FACE);
+
+      // tracer le quadrilatère fermant les solides seulement aux endroits où les bits ne sont pas à 0
+      glStencilFunc( GL_NOTEQUAL, 0, 1);      
+      afficherQuad(1);
+      
+      // désactiver le stencil qui n’est plus nécessaire
+      glDisable(GL_STENCIL_TEST);
+
+      
+      glDisable(GL_CLIP_PLANE0);
    }
 
    void calculerPhysique( )
@@ -414,9 +472,27 @@ void FenetreTP::initialiser()
 
    // partie 1: initialiser le VAO (pour le quad de l'aquarium)
    // ...
-   // partie 1: créer les deux VBO pour les sommets et la connectivité
-   // ...
 
+   glGenVertexArrays(1, &vao);
+   glBindVertexArray(vao);
+   
+   glGenBuffers( 2, vbo );
+
+   // créer le VBO pour les sommets
+   glBindBuffer( GL_ARRAY_BUFFER, vbo[0] );
+   glBufferData( GL_ARRAY_BUFFER, sizeof(coo), coo, GL_STATIC_DRAW );
+   
+   // faire le lien avec l'attribut du nuanceur de sommets
+   glVertexAttribPointer( locVertex, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+   glEnableVertexAttribArray(locVertex);
+   
+   // créer le VBO la connectivité
+   glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, vbo[1] );
+   glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(connec), connec, GL_STATIC_DRAW );
+
+
+   glBindVertexArray(0);
+   
    // ...
 
    // créer quelques autres formes
