@@ -26,6 +26,7 @@ GLint locmatrProj = -1;
 GLint locplanDragage = -1;
 GLint locplanRayonsX = -1;
 GLint locattEloignement = -1;
+GLint locmodeSelection = -1;
 GLuint progBase;  // le programme de nuanceurs de base
 GLint locVertexBase = -1;
 GLint locColorBase = -1;
@@ -341,6 +342,7 @@ public:
 
       // tracer le quadrilatère fermant les solides seulement aux endroits où les bits ne sont pas à 0
       glStencilFunc( GL_NOTEQUAL, 0, 1);
+      afficherQuad(1);
       
       // désactiver le stencil qui n’est plus nécessaire
       glDisable(GL_STENCIL_TEST);
@@ -401,6 +403,7 @@ void chargerNuanceurs()
       if ( ( locmatrModelBase = glGetUniformLocation( progBase, "matrModel" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de matrModel" << std::endl;
       if ( ( locmatrVisuBase = glGetUniformLocation( progBase, "matrVisu" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de matrVisu" << std::endl;
       if ( ( locmatrProjBase = glGetUniformLocation( progBase, "matrProj" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de matrProj" << std::endl;
+      if ( ( locmodeSelection = glGetUniformLocation( progBase, "modeSelection" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de modeSelection" << std::endl;
    }
 
    {
@@ -458,6 +461,7 @@ void chargerNuanceurs()
       if ( ( locplanDragage = glGetUniformLocation( prog, "planDragage" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de planDragage" << std::endl;
       if ( ( locplanRayonsX = glGetUniformLocation( prog, "planRayonsX" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de planRayonsX" << std::endl;
       if ( ( locattEloignement = glGetUniformLocation( prog, "attEloignement" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de attEloignement" << std::endl;
+      if ( ( locmodeSelection = glGetUniformLocation( prog, "modeSelection" ) ) == -1 ) std::cerr << "!!! pas trouvé la \"Location\" de modeSelection" << std::endl;
    }
 }
 
@@ -553,6 +557,7 @@ void FenetreTP::afficherScene( )
    glUniform4fv( locplanDragage, 1, glm::value_ptr(etat.planDragage) );
    glUniform4fv( locplanRayonsX, 1, glm::value_ptr(etat.planRayonsX) );
    glUniform1i( locattEloignement, etat.attEloignement );
+   glUniform1i( locmodeSelection, etat.modeSelection );
 
    // afficher le contenu de l'aquarium
    aquarium.afficherContenu();
@@ -587,7 +592,10 @@ void FenetreTP::afficherScene( )
         // obtenir la couleur   
         GLubyte couleur[3];
         glReadPixels(posX, posY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, couleur);
-        //std::cout << couleur[0] << " " << couleur[1] << " " << couleur[2] << "\n";
+        
+        // obtenir la profondeur (accessoirement)
+        GLfloat profondeur;
+        glReadPixels( posX, posY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &profondeur );
 
         for (auto it = aquarium.poissons.begin(); it != aquarium.poissons.end(); ++it)
         {

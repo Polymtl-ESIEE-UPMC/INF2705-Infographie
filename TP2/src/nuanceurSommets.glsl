@@ -6,6 +6,7 @@ const float M_PI_2 = 1.57079632679489661923;	// pi/2
 uniform mat4 matrModel;
 uniform mat4 matrVisu;
 uniform mat4 matrProj;
+uniform int modeSelection;
 
 uniform vec4 planDragage; // équation du plan de dragage
 uniform vec4 planRayonsX; // équation du plan de rayonX
@@ -25,7 +26,15 @@ void main( void )
    gl_Position = matrProj * matrVisu * matrModel * Vertex;
 
    // couleur du sommet
-   AttribsOut.couleur = Color;
+   if(modeSelection != 1)
+   {
+        vec4 bleu = vec4(0., 1., 1., 1.);
+        AttribsOut.couleur = mix(Color, bleu, Vertex.z);
+   } 
+   else
+   {
+       AttribsOut.couleur = Color;
+   }
 
    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine l'attribut "planDragage".
    // Mettre un test bidon afin que l'optimisation du compilateur n'élimine l'attribut "planRayonsX".
