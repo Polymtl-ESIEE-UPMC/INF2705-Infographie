@@ -5,6 +5,8 @@ Q1: Dans le nuanceur de sommets, si on souhaite calculer la profondeur du
 
     Pourquoi doit-on inverser le signe du résultat calculé ?
 
+    Car la caméra pointe toujours vers les z négatifs, pour avoir une profondeur positive il faut ainsi reculer dans le même axe que la caméra.
+
 
 Q2: Pourquoi ne peut-on pas utiliser le même programme de nuanceurs que pour
     les poissons pour voir l'aquarium (et surtout ses côtés!) dans les deux
@@ -13,4 +15,7 @@ Q2: Pourquoi ne peut-on pas utiliser le même programme de nuanceurs que pour
     de ne pas modifier les couleurs, mais le programme de nuanceurs des
     poissons ne fonctionnera pas correctement pour afficher l'aquarium et
     ses côtés. Pourquoi?
+
+    - On ne veut pas que la couleur de l'aquarium soit influencée par la fonction mix et la profondeur comme celle des poissons
+    - Si on utilise 
 
