@@ -13,6 +13,9 @@
 #include <vector>
 #include <iterator>
 
+static bool pressed = false;
+static bool lastPressed = false;
+
 // variables pour l'utilisation des nuanceurs
 GLuint prog;      // votre programme de nuanceurs
 GLint locVertex = -1;
@@ -88,8 +91,8 @@ public:
 class Poisson
 {
 public:
-   Poisson( glm::vec3 pos = glm::vec3(3.0,1.0,0.0), glm::vec3 vit = glm::vec3(1.0,0.0,0.0), float tai = 0.5 )
-      : position(pos), vitesse(vit), taille(tai)
+   Poisson( glm::vec3 pos = glm::vec3(3.0,1.0,0.0), glm::vec3 vit = glm::vec3(1.0,0.0,0.0), float tai = 0.5, int i = 0)
+      : position(pos), vitesse(vit), taille(tai), id(i), estSelectionne(false)
    {}
 
    void afficher()
@@ -101,10 +104,17 @@ public:
 
          // partie 2: modifs ici ...
          // donner la couleur de sélection
+         glm::vec3 coulCorps( 0.0, 1.0, 0.0 ); // vert
+         glm::vec3 coulYeux( 1.0, 1.0, 0.0 ); // jaune
+
+         if (etat.modeSelection)
+         {
+            coulCorps.r = (float)id/255;
+            coulYeux.r = (float)id/255;
+         }
 
          // afficher le corps
          // (en utilisant le cylindre centré dans l'axe des Z, de rayon 1, entre (0,0,0) et (0,0,1))
-         glm::vec3 coulCorps( 0.0, 1.0, 0.0 ); // vert
          glVertexAttrib3fv( locColor, glm::value_ptr(coulCorps) );
          matrModel.PushMatrix();{
             matrModel.Scale( 5.0*taille, taille, taille );
@@ -118,7 +128,6 @@ public:
 
          // afficher les yeux
          // (en utilisant le cylindre centré dans l'axe des Z, de rayon 1, entre (0,0,0) et (0,0,1))
-         glm::vec3 coulYeux( 1.0, 1.0, 0.0 ); // jaune
          glVertexAttrib3fv( locColor, glm::value_ptr(coulYeux) );
          matrModel.PushMatrix();{
             matrModel.Rotate( 90.0, 1.0, 0.0, 0.0 );
@@ -135,16 +144,21 @@ public:
 
    void avancerPhysique()
    {
-      const float dt = 0.5; // intervalle entre chaque affichage (en secondes)
-      position += dt * vitesse;
-      // test rapide pour empêcher que les poissons sortent de l'aquarium
-      if ( abs(position.x) > 0.9*etat.bDim.x ) vitesse = -vitesse;
+        if (!estSelectionne)
+        {
+            const float dt = 0.5; // intervalle entre chaque affichage (en secondes)
+            position += dt * vitesse;
+            // test rapide pour empêcher que les poissons sortent de l'aquarium
+            if ( abs(position.x) > 0.9*etat.bDim.x ) vitesse = -vitesse;
+        }
    }
 
    // les variables du poisson
    glm::vec3 position;   // en unités
    glm::vec3 vitesse;    // en unités/seconde
    float taille;         // en unités
+   int id;
+   bool estSelectionne;
 };
 
 //
@@ -200,7 +214,7 @@ public:
          float taille = glm::mix( 0.5 , 0.9, rand()/((double)RAND_MAX) );
 
          // créer un nouveau poisson
-         Poisson *p = new Poisson( pos[i], vit, taille );
+         Poisson *p = new Poisson( pos[i], vit, taille, 4 * i + 26);
 
          // assigner une couleur de sélection
          // partie 2: modifs ici ...
@@ -212,22 +226,24 @@ public:
 
    void afficherQuad( GLfloat alpha ) // le plan qui ferme les solides
    {
-      glVertexAttrib4f( locColor, 1.0, 1.0, 1.0, alpha );
-      // afficher le plan mis à l'échelle, tourné selon l'angle courant et à la position courante
-      // partie 1: modifs ici ...
-      matrModel.PushMatrix();{
-         matrModel.Translate(0, 0, -etat.planDragage.w);
-         matrModel.Rotate(etat.angleDragage , 0, 1, 0);
-         matrModel.Scale( etat.bDim.x, etat.bDim.y, etat.bDim.z );
-         glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
+       if (!etat.modeSelection)
+       {
+            glVertexAttrib4f( locColor, 1.0, 1.0, 1.0, alpha );
+            // afficher le plan mis à l'échelle, tourné selon l'angle courant et à la position courante
+            // partie 1: modifs ici ...
+            matrModel.PushMatrix();{
+                matrModel.Translate(0, 0, -etat.planDragage.w);
+                matrModel.Rotate(etat.angleDragage , 0, 1, 0);
+                matrModel.Scale( etat.bDim.x, etat.bDim.y, etat.bDim.z );
+                glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
 
-         glBindVertexArray( vao );
-         glEnable(GL_BLEND);
-         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-         glDisable(GL_BLEND);
-         glBindVertexArray( 0 );
-      }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
-
+                glBindVertexArray( vao );
+                glEnable(GL_BLEND);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+                glDisable(GL_BLEND);
+                glBindVertexArray( 0 );
+            }matrModel.PopMatrix(); glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
+       }
    }
 
    void afficherParois()
@@ -324,8 +340,7 @@ public:
       glDisable(GL_CULL_FACE);
 
       // tracer le quadrilatère fermant les solides seulement aux endroits où les bits ne sont pas à 0
-      glStencilFunc( GL_NOTEQUAL, 0, 1);      
-      afficherQuad(1);
+      glStencilFunc( GL_NOTEQUAL, 0, 1);
       
       // désactiver le stencil qui n’est plus nécessaire
       glDisable(GL_STENCIL_TEST);
@@ -518,7 +533,7 @@ void FenetreTP::afficherScene( )
    glUseProgram( progBase );
 
    // définir le pipeline graphique
-   matrProj.Perspective( 50.0, (GLdouble) largeur_ / (GLdouble) hauteur_, 0.1, 100.0 );
+   matrProj.Perspective( 30.0, (GLdouble) largeur_ / (GLdouble) (hauteur_ * 0.5), 0.1, 100.0 );
    glUniformMatrix4fv( locmatrProjBase, 1, GL_FALSE, matrProj );
 
    camera.definir();
@@ -554,13 +569,43 @@ void FenetreTP::afficherScene( )
    // sélectionner ?
    // partie 2: modifs ici ...
 
+
+   if (etat.modeSelection)
+   {
+       // s'assurer que toutes les opérations sont terminées
+        glFinish();
+
+        // obtenir la clôture et calculer la position demandée
+        GLint cloture[4];
+        glGetIntegerv(GL_VIEWPORT, cloture);
+        GLint posX = etat.sourisPosPrec.x;
+        GLint posY = cloture[1] + cloture[3] - etat.sourisPosPrec.y;
+
+        // dire de lire le tampon arrière où l'on vient tout juste de dessiner
+        glReadBuffer(GL_BACK);
+
+        // obtenir la couleur   
+        GLubyte couleur[3];
+        glReadPixels(posX, posY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, couleur);
+        //std::cout << couleur[0] << " " << couleur[1] << " " << couleur[2] << "\n";
+
+        for (auto it = aquarium.poissons.begin(); it != aquarium.poissons.end(); ++it)
+        {
+            if ((*it)->id == couleur[0] && !lastPressed)
+            {
+                (*it)->estSelectionne = !(*it)->estSelectionne;
+            }
+        }
+   }
+   lastPressed = pressed;
 }
 
 void FenetreTP::redimensionner( GLsizei w, GLsizei h )
 {
-   //glViewport( 0, 0, w, h );
-   glViewportIndexedf(1, w/4, 0, w/2, h/2);
-   glViewportIndexedf(0, w/4, h/2, w/2, h/2);
+    glScissor( 0, 0, w, h );
+    glViewport( 0, h/2, w, h/2 ); // pour le viewport 0
+    glViewportIndexedf( 1,  0, 0, w, h/2 ); // pour le viewport 1
+    glScissorIndexed( 1,  0, 0, w, h/2 );
 }
 
 void FenetreTP::clavier( TP_touche touche )
@@ -635,7 +680,6 @@ void FenetreTP::clavier( TP_touche touche )
    }
 }
 
-static bool pressed = false;
 void FenetreTP::sourisClic( int button, int state, int x, int y )
 {
    pressed = ( state == TP_PRESSE );
@@ -702,7 +746,12 @@ int main( int argc, char *argv[] )
 
       // affichage
       fenetre.afficherScene();
-      fenetre.swap();
+      if(!etat.modeSelection)
+      {
+        fenetre.swap();
+      } else {
+        etat.modeSelection = false;
+      }
 
       // récupérer les événements et appeler la fonction de rappel
       boucler = fenetre.gererEvenement();
