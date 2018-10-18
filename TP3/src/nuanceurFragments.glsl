@@ -73,8 +73,8 @@ void main( void )
    // ...
 
    // assigner la couleur finale
-   //FragColor = AttribsIn.couleur;
-   FragColor = vec4( 0.5, 0.5, 0.5, 1.0 ); // gris moche!
+   FragColor = AttribsIn.couleur;
+   //FragColor = vec4( 0.5, 0.5, 0.5, 1.0 ); // gris moche!
 
    // vec4 coul = calculerReflexion( L, N, O );
    // ...

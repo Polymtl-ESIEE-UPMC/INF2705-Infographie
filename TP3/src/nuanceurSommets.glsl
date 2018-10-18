@@ -81,5 +81,5 @@ void main( void )
 
    // couleur du sommet
    //AttribsOut.couleur = calculerReflexion( L, N, O );
-   AttribsOut.couleur = Color; // à modifier!
+   AttribsOut.couleur = vec4(abs(Normal.x), abs(Normal.y), abs(Normal.z),1); // à modifier!
 }
