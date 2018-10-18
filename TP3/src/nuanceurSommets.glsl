@@ -74,6 +74,26 @@ float calculerSpot( in vec3 D, in vec3 L )
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 {
 	vec4 grisUniforme = vec4(0.7,0.7,0.7,1.0);
+	
+	// ajout de l’émission et du terme ambiant du modèle d’illumination
+	grisUniforme = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
+
+	// calcul de la composante ambiante de la source de lumière
+	grisUniforme += FrontMaterial.ambient * LightSource.ambient;
+
+	// produit scalaire pour le calcul de la réflexion diffuse
+	float NdotL = abs( dot( N, L ) );
+
+	// calcul de la composante diffuse de la source de lumière
+	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
+
+	// calcul de la composante spéculaire (selon Phong ou Blinn)
+	float NdotHV = utiliseBlinn
+						? max ( 0.0, dot( normalize( L + O ), N ) )  // Blinn
+						: max ( 0.0, dot( reflect( -L, N ),   O ) ); // Phong
+
+	// calcul de la composante spéculaire de la source de lumière
+	grisUniforme += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
 	return( grisUniforme );
 }
 
@@ -83,25 +103,33 @@ void main( void )
 	gl_Position = matrProj * matrVisu * matrModel * Vertex;
 
 	// calculer la normale
-	AttribsOut.normale = matrNormale * Normal;
+	vec3 N = matrNormale * Normal;
+	AttribsOut.normale = N;
 
 	// calculer la position du sommet dans le repère de la caméra
 	vec3 pos = ( matrVisu * matrModel * Vertex).xyz;
+	
+	// calculer la direction vers l'observateur
+	vec3 O = LightModel.localViewer
+							? normalize(-pos)
+							: vec3(0.0, 0.0, 1.0);
+	AttribsOut.obsVec = O;
+
+	vec4 coul = vec4(0);
 
 	// calculer la direction de la lumière
 	for (int i = 0; i < LightSource.position.length; ++i)
 	{
-		AttribsOut.lumiDir[i] = LightSource.position[i].w == 0
-								? normalize((matrVisu * LightSource.position[i]).xyz)
-								: normalize((matrVisu * LightSource.position[i] / LightSource.position[i].w).xyz - pos);
+		vec3 L = LightSource.position[i].w == 0
+								? (matrVisu * LightSource.position[i]).xyz
+								: (matrVisu * LightSource.position[i] / LightSource.position[i].w).xyz - pos;
+		
+		coul += typeIllumination == 0
+					? calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
+					: coul; // Phong
+		
+		AttribsOut.lumiDir[i] = L;
 	}
-	
-	// calculer la direction vers l'observateur
-	AttribsOut.obsVec = LightModel.localViewer
-							? normalize(-pos)
-							: vec3(0.0, 0.0, 1.0);
 
-	// couleur du sommet
-	//AttribsOut.couleur = calculerReflexion( L, N, O );
-	AttribsOut.couleur = vec4(abs(Normal.x), abs(Normal.y), abs(Normal.z),1); // à modifier!
+	AttribsOut.couleur = clamp(coul, 0.0, 1.0);
 }

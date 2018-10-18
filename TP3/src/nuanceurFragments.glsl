@@ -72,21 +72,21 @@ vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 	// ajout de l’émission et du terme ambiant du modèle d’illumination
 	grisUniforme = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
 
-	// calcul de la composante ambiante de la 1er source de lumière
+	// calcul de la composante ambiante de la source de lumière
 	grisUniforme += FrontMaterial.ambient * LightSource.ambient;
 
 	// produit scalaire pour le calcul de la réflexion diffuse
 	float NdotL = max( 0.0, dot( N, L ) );
 
-	// calcul de la composante diffuse de la 1er source de lumière
+	// calcul de la composante diffuse de la source de lumière
 	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
 
 	// calcul de la composante spéculaire (selon Phong ou Blinn)
 	float NdotHV = utiliseBlinn
-						? max ( 0.0, dot( normalize( L + O ), N ) )  // avec B et N
-						: max ( 0.0, dot( reflect( -L, N )	, O ) ); // avec R et O 
+						? max ( 0.0, dot( normalize( L + O ), N ) )  // Blinn
+						: max ( 0.0, dot( reflect( -L, N ),   O ) ); // Phong 
 
-	// calcul de la composante spéculaire de la 1er source de lumière
+	// calcul de la composante spéculaire de la source de lumière
 	grisUniforme += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
 
 	return( grisUniforme );
@@ -106,13 +106,13 @@ void main( void )
 	FragColor = AttribsIn.couleur;
 	//FragColor = vec4( 0.5, 0.5, 0.5, 1.0 ); // gris moche!
 
-	
-	vec4 coul = calculerReflexion( L[0], N, O );
-	coul += calculerReflexion( L[1], N, O );
-
-
 	// couleur finale du fragment
-	FragColor = clamp( coul, 0.0, 1.0 );
+	if (typeIllumination == 1)
+	{
+		vec4 coul = calculerReflexion( L[0], N, O );
+		coul += calculerReflexion( L[1], N, O );
+		FragColor = clamp( coul, 0.0, 1.0 );
+	}
 
 	if ( afficheNormales ) FragColor = vec4(N,1.0);
 }
