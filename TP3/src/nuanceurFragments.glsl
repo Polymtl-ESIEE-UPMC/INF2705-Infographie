@@ -82,7 +82,9 @@ vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
 
 	// calcul de la composante spéculaire (selon Phong ou Blinn)
-	float NdotHV = max ( 0.0, dot( normalize( L + O ), N) ); // avec B et N
+	float NdotHV = utiliseBlinn
+						? max ( 0.0, dot( normalize( L + O ), N ) )  // avec B et N
+						: max ( 0.0, dot( reflect( -L, N )	, O ) ); // avec R et O 
 
 	// calcul de la composante spéculaire de la 1er source de lumière
 	grisUniforme += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
