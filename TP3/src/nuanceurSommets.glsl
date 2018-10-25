@@ -63,26 +63,35 @@ out Attribs {
 	vec3 lumiDir[2];
 	vec3 normale;
 	vec3 obsVec;
+	vec3 spotDir[2];
 } AttribsOut;
 
 float calculerSpot( in vec3 D, in vec3 L )
 {
 	float spotFacteur = 1.0;
-	return( spotFacteur );
+
+	float c = LightSource.spotExponent;
+	float cosG = dot(L, D);
+	float cosD = cos(radians(LightSource.spotAngleOuverture));
+	float cosI = cosD;
+	float cosO = pow(cosI, 1.01 + c / 2);
+	
+	return utiliseDirect
+				? smoothstep(cosO, cosI, cosG)
+				: cosG > cosD
+					? pow(cosG, c)
+					: 0;
 }
 
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 {
-	vec4 grisUniforme = vec4(0.7,0.7,0.7,1.0);
-	
-	// ajout de l’émission et du terme ambiant du modèle d’illumination
-	grisUniforme = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
+	vec4 grisUniforme = vec4(0); //vec4(0.7,0.7,0.7,1.0);
 
 	// calcul de la composante ambiante de la source de lumière
 	grisUniforme += FrontMaterial.ambient * LightSource.ambient;
 
 	// produit scalaire pour le calcul de la réflexion diffuse
-	float NdotL = abs( dot( N, L ) );
+	float NdotL = max(0.0, dot( N, L ) );
 
 	// calcul de la composante diffuse de la source de lumière
 	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
@@ -115,7 +124,11 @@ void main( void )
 							: vec3(0.0, 0.0, 1.0);
 	AttribsOut.obsVec = O;
 
-	vec4 coul = vec4(0);
+	
+	// ajout de l’émission et du terme ambiant du modèle d’illumination si Gouraud
+	vec4 coul = typeIllumination == 0 
+					? FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient
+					: vec4(0);
 
 	// calculer la direction de la lumière
 	for (int i = 0; i < LightSource.position.length; ++i)
@@ -124,12 +137,16 @@ void main( void )
 								? (matrVisu * LightSource.position[i]).xyz
 								: (matrVisu * LightSource.position[i] / LightSource.position[i].w).xyz - pos;
 		
+		vec3 D = transpose(inverse(mat3(matrVisu))) * -LightSource.spotDirection[i];
+
 		coul += typeIllumination == 0
-					? calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
-					: coul; // Phong
+					? calculerSpot(normalize(D), normalize(L)) * calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
+					: coul; // Phong (coul = 0)
 		
 		AttribsOut.lumiDir[i] = L;
+		AttribsOut.spotDir[i] = D;
 	}
+
 
 	AttribsOut.couleur = clamp(coul, 0.0, 1.0);
 }

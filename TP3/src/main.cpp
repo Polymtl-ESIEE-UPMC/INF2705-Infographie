@@ -545,14 +545,14 @@ void afficherModele()
 			matrModel.Translate( 0.0, 0.0, -0.5 );
 			matrModel.Scale( 0.5, 0.5, 0.5 );
 			glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
-		glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
+			glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
 			theiere->afficher( );
 			break;
 		case 5:
 			matrModel.PushMatrix(); {
 				matrModel.Translate( 0.0, 0.0, -1.5 );
 				glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
-		glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
+				glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
 				cylindre->afficher();
 			} matrModel.PopMatrix();
 			break;
@@ -560,7 +560,7 @@ void afficherModele()
 			matrModel.PushMatrix(); {
 				matrModel.Translate( 0.0, 0.0, -1.5 );
 				glUniformMatrix4fv( locmatrModel, 1, GL_FALSE, matrModel );
-		glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
+				glUniformMatrix3fv( locmatrNormale, 1, GL_TRUE, glm::value_ptr( glm::inverse( glm::mat3( matrVisu.getMatr() * matrModel.getMatr() ) ) ) );
 				cone->afficher();
 			} matrModel.PopMatrix();
 			break;

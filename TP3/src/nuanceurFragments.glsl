@@ -55,25 +55,32 @@ in Attribs {
 	vec3 lumiDir[2];
 	vec3 normale;
 	vec3 obsVec;
+	vec3 spotDir[2];
 } AttribsIn;
 
 out vec4 FragColor;
 
 float calculerSpot( in vec3 D, in vec3 L )
 {
-	float spotFacteur = 1.0;
-	return( spotFacteur );
+	float c = LightSource.spotExponent;
+	float cosG = dot(L, D);
+	float cosD = cos(radians(LightSource.spotAngleOuverture));
+	float cosI = cosD;
+	float cosO = pow(cosI, 1.01 + c / 2);
+
+	return utiliseDirect
+				? smoothstep(cosO, cosI, cosG)
+				: cosG > cosD
+					? pow(cosG, c)
+					: 0;
 }
 
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 {
 	vec4 grisUniforme = vec4(0.7,0.7,0.7,1.0);
-
-	// ajout de l’émission et du terme ambiant du modèle d’illumination
-	grisUniforme = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
-
+	
 	// calcul de la composante ambiante de la source de lumière
-	grisUniforme += FrontMaterial.ambient * LightSource.ambient;
+	grisUniforme = FrontMaterial.ambient * LightSource.ambient;
 
 	// produit scalaire pour le calcul de la réflexion diffuse
 	float NdotL = max( 0.0, dot( N, L ) );
@@ -106,11 +113,18 @@ void main( void )
 	FragColor = AttribsIn.couleur;
 	//FragColor = vec4( 0.5, 0.5, 0.5, 1.0 ); // gris moche!
 
+
 	// couleur finale du fragment
 	if (typeIllumination == 1)
 	{
-		vec4 coul = calculerReflexion( L[0], N, O );
-		coul += calculerReflexion( L[1], N, O );
+		// ajout de l’émission et du terme ambiant du modèle d’illumination
+		vec4 coul = FrontMaterial.emission + FrontMaterial.ambient * LightModel.ambient;
+		
+		for (int i = 0; i < AttribsIn.lumiDir.length; ++i)
+		{
+			vec3 D = normalize(AttribsIn.spotDir[i]);
+				coul += calculerSpot(D, L[i]) * calculerReflexion( L[i], N, O );
+		}
 		FragColor = clamp( coul, 0.0, 1.0 );
 	}
 
