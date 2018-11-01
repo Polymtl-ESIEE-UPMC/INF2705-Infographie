@@ -401,8 +401,8 @@ void FenetreTP::initialiser()
 	GLfloat sommets[3*4*6] =
 	{
 		-1.0,  1.0, -1.0,    1.0,  1.0, -1.0,  -1.0, -1.0, -1.0,    1.0, -1.0, -1.0,   // P3,P2,P0,P1
-		1.0, -1.0,  1.0,   -1.0, -1.0,  1.0,   1.0, -1.0, -1.0,   -1.0, -1.0, -1.0,   // P5,P4,P1,P0
-		1.0,  1.0,  1.0,    1.0, -1.0,  1.0,   1.0,  1.0, -1.0,    1.0, -1.0, -1.0,   // P6,P5,P2,P1
+		 1.0, -1.0,  1.0,   -1.0, -1.0,  1.0,   1.0, -1.0, -1.0,   -1.0, -1.0, -1.0,   // P5,P4,P1,P0
+		 1.0,  1.0,  1.0,    1.0, -1.0,  1.0,   1.0,  1.0, -1.0,    1.0, -1.0, -1.0,   // P6,P5,P2,P1
 		-1.0,  1.0,  1.0,    1.0,  1.0,  1.0,  -1.0,  1.0, -1.0,    1.0,  1.0, -1.0,   // P7,P6,P3,P2
 		-1.0, -1.0,  1.0,   -1.0,  1.0,  1.0,  -1.0, -1.0, -1.0,   -1.0,  1.0, -1.0,   // P4,P7,P0,P3
 		-1.0, -1.0,  1.0,    1.0, -1.0,  1.0,  -1.0,  1.0,  1.0,    1.0,  1.0,  1.0    // P4,P5,P7,P6
@@ -410,14 +410,44 @@ void FenetreTP::initialiser()
 
 	GLfloat normales[3*4*6] =
 	{
-		0.0,  0.0, -1.0,        0.0,  0.0, -1.0,        0.0,  0.0, -1.0,        0.0,  0.0, -1.0,
-		0.0, -1.0,  0.0,        0.0, -1.0,  0.0,        0.0, -1.0,  0.0,        0.0, -1.0,  0.0,
-		1.0,  0.0,  0.0,        1.0,  0.0,  0.0,        1.0,  0.0,  0.0,        1.0,  0.0,  0.0,
-		0.0,  1.0,  0.0,        0.0,  1.0,  0.0,        0.0,  1.0,  0.0,        0.0,  1.0,  0.0,
+		 0.0,  0.0, -1.0,        0.0,  0.0, -1.0,        0.0,  0.0, -1.0,        0.0,  0.0, -1.0,
+		 0.0, -1.0,  0.0,        0.0, -1.0,  0.0,        0.0, -1.0,  0.0,        0.0, -1.0,  0.0,
+		 1.0,  0.0,  0.0,        1.0,  0.0,  0.0,        1.0,  0.0,  0.0,        1.0,  0.0,  0.0,
+		 0.0,  1.0,  0.0,        0.0,  1.0,  0.0,        0.0,  1.0,  0.0,        0.0,  1.0,  0.0,
 		-1.0,  0.0,  0.0,       -1.0,  0.0,  0.0,       -1.0,  0.0,  0.0,       -1.0,  0.0,  0.0,
-		0.0,  0.0,  1.0,        0.0,  0.0,  1.0,        0.0,  0.0,  1.0,        0.0,  0.0,  1.0
+		 0.0,  0.0,  1.0,        0.0,  0.0,  1.0,        0.0,  0.0,  1.0,        0.0,  0.0,  1.0
 	};
-
+	
+	
+	GLfloat cootex1[2*4*6] =
+	{
+		2.0 / 3.0,	0.0,			2.0 / 3.0,	1.0 / 3.0,		1.0, 		0.0,			1.0,		1.0 / 3.0,
+		0.0,		1.0 / 3.0,		0.0,		2.0 / 3.0,		1.0 / 3.0,	1.0 / 3.0,		1.0 / 3.0,	2.0 / 3.0,
+		1.0 / 3.0,	2.0 / 3.0,		1.0 / 3.0,	1.0,			2.0 / 3.0,	2.0 / 3.0,		2.0 / 3.0,	1.0,
+		2.0 / 3.0,	1.0 / 3.0,		2.0 / 3.0,	2.0 / 3.0,		1.0,		1.0 / 3.0,		1.0,		2.0 / 3.0,
+		1.0 / 3.0,	0.0,			1.0 / 3.0,	1.0 / 3.0,		2.0 / 3.0,	0.0,			2.0 / 3.0,	1.0 / 3.0,
+		1.0 / 3.0,	1.0 / 3.0,		1.0 / 3.0,	2.0 / 3.0,		2.0 / 3.0,	1.0 / 3.0,		2.0 / 3.0,	2.0 / 3.0,
+	};
+	
+	GLfloat cootex2[2*4*6] =
+	{
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0,
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0,
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0,
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0,
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0,
+		0.0,	0.0,		0.0,	3.0,		3.0,	0.0,		3.0,	3.0
+	};
+	
+	GLfloat cootex3[2*4*6] =
+	{
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0,
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0,
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0,
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0,
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0,
+		0.0,	0.0,		0.0,	1.0,		1.0,	0.0,		1.0,	1.0
+	};
 
 	// allouer les objets OpenGL
 	glGenVertexArrays( 2, vao );
@@ -438,11 +468,22 @@ void FenetreTP::initialiser()
 	glVertexAttribPointer( locNormal, 3, GL_FLOAT, GL_FALSE, 0, 0 );
 	glEnableVertexAttribArray(locNormal);
 
-
-
-
 	// partie 3: charger le VBO pour les coordonnées de texture
 	// ...
+	glBindBuffer( GL_ARRAY_BUFFER, vbo[2] );
+	glBufferData( GL_ARRAY_BUFFER, sizeof(cootex1), cootex1, GL_STATIC_DRAW );
+	glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	glEnableVertexAttribArray(locTexCoord);
+
+	glBindBuffer( GL_ARRAY_BUFFER, vbo[3] );
+	glBufferData( GL_ARRAY_BUFFER, sizeof(cootex2), cootex2, GL_STATIC_DRAW );
+	glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	glEnableVertexAttribArray(locTexCoord);
+
+	glBindBuffer( GL_ARRAY_BUFFER, vbo[4] );
+	glBufferData( GL_ARRAY_BUFFER, sizeof(cootex3), cootex3, GL_STATIC_DRAW );
+	glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	glEnableVertexAttribArray(locTexCoord);
 
 	glBindVertexArray(0);
 
@@ -482,25 +523,42 @@ void FenetreTP::conclure()
 
 void afficherModele()
 {
+	glBindVertexArray(vao[0]);
 	// partie 3: paramètres de texture
 	switch ( varsUnif.texnumero )
 	{
 	default:
+		glBindTexture( GL_TEXTURE_2D, 0);
 		//std::cout << "Sans texture" << std::endl;
 		break;
 	case 1:
+		glBindBuffer( GL_ARRAY_BUFFER, vbo[2]);
+		glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+		glBindTexture( GL_TEXTURE_2D, textures[0]);
 		//std::cout << "Texture 1 DE" << std::endl;
 		break;
 	case 2:
+		glBindBuffer( GL_ARRAY_BUFFER, vbo[3]);
+		glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+		glBindTexture( GL_TEXTURE_2D, textures[1]);
 		//std::cout << "Texture 2 ECHIQUIER" << std::endl;
 		break;
 	case 3:
+		glBindBuffer( GL_ARRAY_BUFFER, vbo[4]);
+		glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+		glBindTexture( GL_TEXTURE_2D, textures[2]);
 		//std::cout << "Texture 3 METAL" << std::endl;
 		break;
 	case 4:
+		glBindBuffer( GL_ARRAY_BUFFER, vbo[4]);
+		glVertexAttribPointer( locTexCoord, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+		glBindTexture( GL_TEXTURE_2D, textures[3]);
 		//std::cout << "Texture 4 MOSAIQUE" << std::endl;
 		break;
 	}
+	
+
+
 
 	// Dessiner le modèle
 	matrModel.PushMatrix(); {

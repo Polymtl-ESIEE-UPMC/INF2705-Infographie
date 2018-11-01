@@ -56,6 +56,7 @@ in Attribs {
 	vec3 normale;
 	vec3 obsVec;
 	vec3 spotDir[2];
+	vec2 texCoord;
 } AttribsIn;
 
 out vec4 FragColor;
@@ -76,17 +77,15 @@ float calculerSpot( in vec3 D, in vec3 L )
 }
 
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
-{
-	vec4 grisUniforme = vec4(0.7,0.7,0.7,1.0);
-	
+{	
 	// calcul de la composante ambiante de la source de lumière
-	grisUniforme = FrontMaterial.ambient * LightSource.ambient;
+	vec4 coul = FrontMaterial.ambient * LightSource.ambient;
 
 	// produit scalaire pour le calcul de la réflexion diffuse
 	float NdotL = max( 0.0, dot( N, L ) );
 
 	// calcul de la composante diffuse de la source de lumière
-	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
+	coul += (utiliseCouleur ? FrontMaterial.diffuse : vec4(0.7,0.7,0.7,1.0)) * LightSource.diffuse * NdotL;
 
 	// calcul de la composante spéculaire (selon Phong ou Blinn)
 	float NdotHV = utiliseBlinn
@@ -94,9 +93,9 @@ vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 						: max ( 0.0, dot( reflect( -L, N ),   O ) ); // Phong 
 
 	// calcul de la composante spéculaire de la source de lumière
-	grisUniforme += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
+	coul += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
 
-	return( grisUniforme );
+	return( coul );
 }
 
 void main( void )
@@ -127,6 +126,23 @@ void main( void )
 		}
 		FragColor = clamp( coul, 0.0, 1.0 );
 	}
+	vec4 coul = clamp(texture(laTexture, AttribsIn.texCoord), 0.0, 1.0);
+	if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
+	
+		switch (afficheTexelFonce) {
+			case 0:
+				FragColor *= coul;
+				break;
+			case 1:
+				FragColor *= (FragColor + coul) * 0.5;
+				break;
+			case 2:
+				discard;
+			default:
+				break;
+		}
+	}	
+	FragColor = clamp(FragColor, 0.0, 1.0);
 
 	if ( afficheNormales ) FragColor = vec4(N,1.0);
 }

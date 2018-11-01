@@ -64,6 +64,7 @@ out Attribs {
 	vec3 normale;
 	vec3 obsVec;
 	vec3 spotDir[2];
+	vec2 texCoord;
 } AttribsOut;
 
 float calculerSpot( in vec3 D, in vec3 L )
@@ -85,16 +86,14 @@ float calculerSpot( in vec3 D, in vec3 L )
 
 vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 {
-	vec4 grisUniforme = vec4(0); //vec4(0.7,0.7,0.7,1.0);
-
 	// calcul de la composante ambiante de la source de lumière
-	grisUniforme += FrontMaterial.ambient * LightSource.ambient;
+	vec4 coul = FrontMaterial.ambient * LightSource.ambient;
 
 	// produit scalaire pour le calcul de la réflexion diffuse
 	float NdotL = max(0.0, dot( N, L ) );
 
 	// calcul de la composante diffuse de la source de lumière
-	grisUniforme += FrontMaterial.diffuse * LightSource.diffuse * NdotL;
+	coul += (utiliseCouleur ? FrontMaterial.diffuse : vec4(0.7,0.7,0.7,1.0)) * LightSource.diffuse * NdotL;
 
 	// calcul de la composante spéculaire (selon Phong ou Blinn)
 	float NdotHV = utiliseBlinn
@@ -102,8 +101,8 @@ vec4 calculerReflexion( in vec3 L, in vec3 N, in vec3 O )
 						: max ( 0.0, dot( reflect( -L, N ),   O ) ); // Phong
 
 	// calcul de la composante spéculaire de la source de lumière
-	grisUniforme += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
-	return( grisUniforme );
+	coul += FrontMaterial.specular * LightSource.specular * pow( NdotHV, FrontMaterial.shininess );
+	return( coul );
 }
 
 void main( void )
@@ -140,13 +139,15 @@ void main( void )
 		vec3 D = transpose(inverse(mat3(matrVisu))) * -LightSource.spotDirection[i];
 
 		coul += typeIllumination == 0
-					? calculerSpot(normalize(D), normalize(L)) * calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
+					//? calculerSpot(normalize(D), normalize(L)) * calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
+					? calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
 					: coul; // Phong (coul = 0)
 		
 		AttribsOut.lumiDir[i] = L;
 		AttribsOut.spotDir[i] = D;
 	}
 
+	AttribsOut.texCoord = TexCoord.st;
 
 	AttribsOut.couleur = clamp(coul, 0.0, 1.0);
 }
