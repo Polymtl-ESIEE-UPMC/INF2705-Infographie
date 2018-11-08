@@ -254,7 +254,7 @@ void chargerNuanceurs()
 		prog = glCreateProgram();
 
 		// attacher le nuanceur de sommets
-		const GLchar *chainesSommets = ProgNuanceur::lireNuanceur( "nuanceurSommets.glsl" );
+		const GLchar *chainesSommets = ProgNuanceur::lireNuanceur( Etat::utiliseTess ? "nuanceurSommetsTess.glsl" : "nuanceurSommets.glsl" );
 		if ( chainesSommets != NULL )
 		{
 			GLuint nuanceurObj = glCreateShader( GL_VERTEX_SHADER );
@@ -580,6 +580,12 @@ void afficherModele()
 			if ( Etat::utiliseTess )
 			{
 				// partie 4: afficher le cube avec des GL_PATCHES
+				glDrawArrays( GL_PATCHES,  0, 4 );
+				glDrawArrays( GL_PATCHES,  4, 4 );
+				glDrawArrays( GL_PATCHES,  8, 4 );
+				glDrawArrays( GL_PATCHES, 12, 4 );
+				glDrawArrays( GL_PATCHES, 16, 4 );
+				glDrawArrays( GL_PATCHES, 20, 4 );
 			}
 			else
 			{

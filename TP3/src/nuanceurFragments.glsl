@@ -129,21 +129,28 @@ void main( void )
 	if (texnumero != 0) 
 	{
 		vec4 coul = clamp(texture(laTexture, AttribsIn.texCoord), 0.0, 1.0);
-		if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
-		
 			switch (afficheTexelFonce) {
 				case 0:
 					FragColor *= coul;
 					break;
 				case 1:
-					FragColor *= (FragColor + coul) * 0.5;
+					if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
+						FragColor *= (FragColor + coul) * 0.5;
+					} else {
+						FragColor *= coul;
+					}
 					break;
 				case 2:
-					discard;
+					if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
+						discard;
+					} else {
+						FragColor *= coul;
+					}
+					break;
 				default:
 					break;
 			}
-		}	
+		
 		FragColor = clamp(FragColor, 0.0, 1.0);
 	}
 
