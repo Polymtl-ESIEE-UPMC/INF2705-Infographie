@@ -139,8 +139,7 @@ void main( void )
 		vec3 D = transpose(inverse(mat3(matrVisu))) * -LightSource.spotDirection[i];
 
 		coul += typeIllumination == 0
-					//? calculerSpot(normalize(D), normalize(L)) * calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
-					? calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
+					? calculerSpot(normalize(D), normalize(L)) * calculerReflexion( normalize(L), normalize(N), normalize(O) ) // Gouraud
 					: coul; // Phong (coul = 0)
 		
 		AttribsOut.lumiDir[i] = L;

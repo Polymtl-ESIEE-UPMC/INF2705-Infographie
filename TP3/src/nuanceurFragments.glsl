@@ -126,23 +126,26 @@ void main( void )
 		}
 		FragColor = clamp( coul, 0.0, 1.0 );
 	}
-	vec4 coul = clamp(texture(laTexture, AttribsIn.texCoord), 0.0, 1.0);
-	if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
-	
-		switch (afficheTexelFonce) {
-			case 0:
-				FragColor *= coul;
-				break;
-			case 1:
-				FragColor *= (FragColor + coul) * 0.5;
-				break;
-			case 2:
-				discard;
-			default:
-				break;
-		}
-	}	
-	FragColor = clamp(FragColor, 0.0, 1.0);
+	if (texnumero != 0) 
+	{
+		vec4 coul = clamp(texture(laTexture, AttribsIn.texCoord), 0.0, 1.0);
+		if(coul.r < 0.5 && coul.g < 0.5 && coul.b < 0.5) {
+		
+			switch (afficheTexelFonce) {
+				case 0:
+					FragColor *= coul;
+					break;
+				case 1:
+					FragColor *= (FragColor + coul) * 0.5;
+					break;
+				case 2:
+					discard;
+				default:
+					break;
+			}
+		}	
+		FragColor = clamp(FragColor, 0.0, 1.0);
+	}
 
 	if ( afficheNormales ) FragColor = vec4(N,1.0);
 }
