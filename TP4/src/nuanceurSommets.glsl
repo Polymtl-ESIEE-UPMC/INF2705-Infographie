@@ -2,7 +2,6 @@
 
 uniform mat4 matrModel;
 uniform mat4 matrVisu;
-uniform mat4 matrProj;
 
 uniform float pointsize;
 
@@ -14,13 +13,13 @@ layout(location=5) in float tempsRestant;
 out Attribs {
     vec4 couleur;
     float tempsRestant;
-    //float sens; // du vol
+    float sens; // du vol
 } AttribsOut;
 
 void main( void )
 {
     // transformation standard du sommet
-    gl_Position = matrProj * matrVisu * matrModel * Vertex;
+    gl_Position = matrVisu * matrModel * Vertex;
 
     AttribsOut.tempsRestant = tempsRestant;
 
@@ -29,6 +28,8 @@ void main( void )
 
     // assigner la taille des points (en pixels)
     gl_PointSize = pointsize;
+
+    AttribsOut.sens = (vitesse).x > 0 ? 1 : -1;
 
     // À SUPPRIMER: les lignes suivantes servent seulement à forcer le compilateur à conserver cet attribut
     // Vous ENLEVEREZ cet énoncé inutile!
