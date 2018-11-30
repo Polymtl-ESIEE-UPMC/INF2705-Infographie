@@ -20,7 +20,7 @@ uniform int texnumero;
 void main()
 {	
 	// assigner la taille des points (en pixels)
-	gl_PointSize = gl_in[0].gl_PointSize;
+	//gl_PointSize = gl_in[0].gl_PointSize;
 
 	const int N_SPRITE = 16;
 	vec2 coins[4];
@@ -31,12 +31,12 @@ void main()
 	for ( int i = 0 ; i < coins.length ; ++i )
 	{
 		// assigner la position du point
-		float fact = gl_in[0].gl_PointSize / 50;
+		float fact = gl_in[0].gl_PointSize / 50; // à ajouter pour varier la grandeur du point / gl_in[0].gl_Position.z;
 		
 		// rotation des sommets n'est pas appliquée
 		if (texnumero == 1)
 		{
-			float theta = 6*AttribsIn[0].tempsRestant;//int(mod(6*AttribsIn[0].tempsRestant, 2*M_PI));
+			float theta = 6*AttribsIn[0].tempsRestant;
 
 			mat3 rot = mat3(cos(theta), -sin(theta), 0,
 							sin(theta), cos(theta),  0,
