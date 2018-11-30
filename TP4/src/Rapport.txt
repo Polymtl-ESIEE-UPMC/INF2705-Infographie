@@ -2,13 +2,24 @@ Indice: pour bien répondre à ces deux questions, essayez de voir si votre rép
 
 
 Q1: Dans la partie 1, des points de taille fixe sont affichés à l'écran. Leur taille est donnée par la variable gl_PointSize.
-    i) Comment faire pour que la taille d'un point varie de façon inverse à sa distance du plan avant du volume de visualisation, c'est-à-dire qu'il soit plus gros lorsqu'il est plus près de la caméra ?
-    ii) Donnez l'énoncé GLSL que vous utiliseriez pour implanter ceci.
+	i) Comment faire pour que la taille d'un point varie de façon inverse à sa distance du plan avant du volume de visualisation, c'est-à-dire qu'il soit plus gros lorsqu'il est plus près de la caméra ?
+	ii) Donnez l'énoncé GLSL que vous utiliseriez pour implanter ceci.
+
+	La taille des points varie déjà en fonction de cette distance. Cependant, on pourrait faire plus en spécifiant à la ligne 34 du nuanceur de géométrie:
+		float fact = gl_in[0].gl_PointSize / 50 / gl_in[0].gl_Position.z;
+		
 
 
 
 Q2: Pour afficher une étincelle qui tourne sur elle-même, on a appliqué une matrice de rotation sur les quatre sommets.
-    i) Pourrait-on faire tourner l'étincelle en appliquant la même matrice de rotation sur les coordonnées de texture plutôt que sur les coordonnées des sommets?
-    ii) Quel problème observerions-nous alors et comment devrait-il être corrigé?
+	i) Pourrait-on faire tourner l'étincelle en appliquant la même matrice de rotation sur les coordonnées de texture plutôt que sur les coordonnées des sommets?
+	ii) Quel problème observerions-nous alors et comment devrait-il être corrigé?
 
-    Afin de facilement répondre à cette question, vous pouvez remplacer (temporairement!) l'image de l'étincelle de ce TP par l'image de l'échiquier du TP3.  Si vous appliquez ensuite la matrice de rotation sur les coordonnées de texture plutôt que sur les coordonnées des sommets, vous pourrez alors très bien voir ce qui se passe.
+	Oui, voir les commentaire dans le nuanceur de géométrie. Dans notre cas, nous appliquons justement cette rotation sur les textures et non sur les sommets.
+	La matrice de rotation reste la même, ce qui change c'est le calcul. Dans le premier cas, c'est le décalage qui varie, dans le deuxième, le décalage ne varie
+	pas en fonction du temps.
+
+	Le problème observé est que les coordonnées de texture sont en 2D. Alors, il faut utiliser des coordonnées homogènes pour faire les calculs:
+		AttribsOut.texCoord = (point * trans * rot * transInv).xy;
+
+	Afin de facilement répondre à cette question, vous pouvez remplacer (temporairement!) l'image de l'étincelle de ce TP par l'image de l'échiquier du TP3.  Si vous appliquez ensuite la matrice de rotation sur les coordonnées de texture plutôt que sur les coordonnées des sommets, vous pourrez alors très bien voir ce qui se passe.
