@@ -12,10 +12,6 @@ out vec4 FragColor;
 
 void main( void )
 {
-	// Mettre un test bidon afin que l'optimisation du compilateur n'élimine l'attribut "couleur".
-	// Vous ENLEVEREZ cet énoncé inutile!
-	if ( AttribsIn.couleur.r + texnumero + texture(laTexture,vec2(0.0)).r < 0.0 ) discard;
-
 	vec4 couleur = AttribsIn.couleur;
 	if ( texnumero != 0 )
 	{
